@@ -1,6 +1,12 @@
 ﻿using AutoMapper;
+using BlogSite.Models.Dtos.Category.Requests;
+using BlogSite.Models.Dtos.Category.Responses;
+using BlogSite.Models.Dtos.Comment.Requesets;
+using BlogSite.Models.Dtos.Comment.Responses;
 using BlogSite.Models.Dtos.Post.Requests;
 using BlogSite.Models.Dtos.Post.Responses;
+using BlogSite.Models.Dtos.User.Requests;
+using BlogSite.Models.Dtos.User.Responses;
 using BlogSite.Models.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,5 +22,16 @@ public class MappingProfiles : Profile
     {
         CreateMap<CreatePostRequest, Post>();
         CreateMap<Post, PostResponseDto>();
+        CreateMap<CreateCategoryRequest, Category>();
+        CreateMap<Category, CategoryResponseDto>();
+        CreateMap<CreateUserRequest, User>();
+        CreateMap<User,UserResponseDto>();
+        CreateMap<CreateCommentRequest, Comment>();
+        CreateMap<Comment,CommentResponseDto>();
+        CreateMap<Comment, CommentResponseDto>()
+        .ForMember(x => x.UserUsername, opt => opt.MapFrom(x => x.User.Username)) 
+        .ForMember(x => x.PostTitle, opt => opt.MapFrom(x => x.Post.Title))       
+        .ForMember(x => x.PostContent, opt => opt.MapFrom(x => x.Post.Content));
+
     }
 }

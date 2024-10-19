@@ -5,11 +5,6 @@ using BlogSite.Models.Dtos.Post.Responses;
 using BlogSite.Models.Entities;
 using BlogSite.Service.Abstracts;
 using Core.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlogSite.Service.Concrets;
 

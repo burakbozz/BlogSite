@@ -15,6 +15,7 @@ namespace BlogSite.Models.Dtos.Post.Responses
         public DateTime UpdatedDate { get; init; }
         public string AuthorUserName { get; init; }
         public string CategoryName { get; init; }
+        
     }
 
 
