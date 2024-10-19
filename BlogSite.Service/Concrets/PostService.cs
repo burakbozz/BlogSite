@@ -4,6 +4,7 @@ using BlogSite.Models.Dtos.Post.Requests;
 using BlogSite.Models.Dtos.Post.Responses;
 using BlogSite.Models.Entities;
 using BlogSite.Service.Abstracts;
+using Core.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,21 +25,100 @@ public class PostService : IPostService
         _mapper = mapper;
     }
 
-    public Post Add(CreatePostRequest create)
+    public ReturnModel<PostResponseDto> Add(CreatePostRequest create)
     {
-        Post post = _mapper.Map<Post>(create);
-        Post createdPost = _postRepository.Add(post);
+        Post createdPost = _mapper.Map<Post>(create);
+        createdPost.Id = Guid.NewGuid();
 
-        return createdPost;
+        _postRepository.Add(createdPost);
+
+        PostResponseDto response = _mapper.Map<PostResponseDto>(createdPost);
+
+        return new ReturnModel<PostResponseDto>
+        {
+            Data = response,
+            Message = "Post Eklendi.",
+            StatusCode = 200,
+            Success = true
+        };
     }
 
-    public List<PostResponseDto> GetAll()
+    public ReturnModel<List<PostResponseDto>> GetAll()
     {
-        throw new NotImplementedException();
+        List<Post> posts = _postRepository.GetAll();
+        List<PostResponseDto> postResponses = _mapper.Map<List<PostResponseDto>>(posts);
+
+        return new ReturnModel<List<PostResponseDto>>
+        {
+            Data = postResponses,
+            Message = "Post listelendi.",
+            StatusCode = 200,
+            Success = true
+        };
     }
 
-    public PostResponseDto? GetById(Guid id)
+    public ReturnModel<PostResponseDto?> GetById(Guid id)
     {
-        throw new NotImplementedException();
+        Post? post = _postRepository.GetById(id);
+        PostResponseDto responseDto = _mapper.Map<PostResponseDto>(post);
+        if (post is null)
+        {
+            return new ReturnModel<PostResponseDto?>
+            {
+                Data = null,
+                Message = "",
+                StatusCode = 404,
+                Success = false
+            };
+
+        }
+        return new ReturnModel<PostResponseDto?>
+        {
+            Data = responseDto,
+            Message = string.Empty,
+            StatusCode = 200,
+            Success = true
+        };
+    }
+
+    public ReturnModel<PostResponseDto> Remove(Guid id)
+    {
+        Post post = _postRepository.GetById(id);
+        Post deletedPost = _postRepository.Remove(post);
+
+        PostResponseDto response = _mapper.Map<PostResponseDto>(deletedPost);
+
+        return new ReturnModel<PostResponseDto>
+        {
+            Data = response,
+            Message = "Post Silindi.",
+            StatusCode = 200,
+            Success = true
+        };
+    }
+
+    public ReturnModel<PostResponseDto> Update(UpdatePostRequest updatePost)
+    {
+        
+        Post post = _postRepository.GetById(updatePost.Id);
+
+        
+        post.Content = updatePost.Content;
+        post.Title = updatePost.Title;
+        post.UpdatedDate = DateTime.Now; 
+
+        
+        Post updatedPost = _postRepository.Update(post);
+
+        
+        PostResponseDto dto = _mapper.Map<PostResponseDto>(updatedPost);
+
+        return new ReturnModel<PostResponseDto>
+        {
+            Data = dto,
+            Message = "Post güncellendi",
+            StatusCode = 200,
+            Success = true
+        };
     }
 }
