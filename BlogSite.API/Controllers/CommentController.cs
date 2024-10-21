@@ -47,22 +47,18 @@ public class CommentController(ICommentService _commentService) : ControllerBase
     public IActionResult GetCommentsByPost(Guid postId)
     {
         var result = _commentService.GetCommentsByPost(postId);
-        if (result.Success)
-        {
-            return Ok(result);
-        }
-        return StatusCode(result.StatusCode, result);
+        return Ok(result);
+        
+        
     }
 
-    // Get comments by author
+    
     [HttpGet("GetCommentsByAuthor/{authorId}")]
     public IActionResult GetCommentsByAuthor(long authorId)
     {
         var result = _commentService.GetCommentsByAuthor(authorId);
-        if (result.Success)
-        {
-            return Ok(result);
-        }
-        return StatusCode(result.StatusCode, result);
+        return Ok(result);
+        
+        
     }
 }

@@ -46,11 +46,8 @@ public class PostsController(IPostService _postService) : ControllerBase
     public IActionResult GetPostsByAuthor(long authorId)
     {
         var result = _postService.GetPostsByAuthor(authorId);
-        if (result.Success)
-        {
-            return Ok(result);
-        }
-        return StatusCode(result.StatusCode, result);
+        return Ok(result);
+       
     }
 
     
@@ -58,10 +55,7 @@ public class PostsController(IPostService _postService) : ControllerBase
     public IActionResult GetPostsByCategory(int categoryId)
     {
         var result = _postService.GetPostsByCategory(categoryId);
-        if (result.Success)
-        {
-            return Ok(result);
-        }
-        return StatusCode(result.StatusCode, result);
+        return Ok(result);
+               
     }
 }
