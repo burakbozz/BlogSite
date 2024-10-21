@@ -83,6 +83,8 @@ public class CommentService : ICommentService
         };
     }
 
+
+
     public ReturnModel<CommentResponseDto> Remove(Guid id)
     {
         Comment comment = _commentRepository.GetById(id);
@@ -119,4 +121,32 @@ public class CommentService : ICommentService
             Success = true
         };
     }
+    public ReturnModel<List<CommentResponseDto>> GetCommentsByAuthor(long authorId)
+    {
+        var comments = _commentRepository.GetCommentsByAuthor(authorId).ToList();
+        var commentDtos = _mapper.Map<List<CommentResponseDto>>(comments);
+
+        return new ReturnModel<List<CommentResponseDto>>
+        {
+            Data = commentDtos,
+            Message = "Yazara ait yorumlar listelendi.",
+            StatusCode = 200,
+            Success = true
+        };
+    }
+
+    public ReturnModel<List<CommentResponseDto>> GetCommentsByPost(Guid postId)
+    {
+        var comments = _commentRepository.GetCommentsByPost(postId).ToList();
+        var commentDtos = _mapper.Map<List<CommentResponseDto>>(comments);
+
+        return new ReturnModel<List<CommentResponseDto>>
+        {
+            Data = commentDtos,
+            Message = "Posta ait yorumlar listelendi.",
+            StatusCode = 200,
+            Success = true
+        };
+    }
+
 }

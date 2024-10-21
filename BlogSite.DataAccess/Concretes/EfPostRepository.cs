@@ -1,7 +1,9 @@
 ﻿using BlogSite.DataAccess.Abstracts;
 using BlogSite.DataAccess.Contexts;
+using BlogSite.Models.Dtos.Post.Responses;
 using BlogSite.Models.Entities;
 using Core.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,22 @@ namespace BlogSite.DataAccess.Concretes
     {
         public EfPostRepository(BaseDbContext context) : base(context)
         {
+        }
+
+        public IEnumerable<Post> GetPostsByCategory(int categoryId)
+        {
+            return Context.Posts
+                .Where(p => p.CategoryId == categoryId)
+                .ToList();
+                
+        }
+
+        public IEnumerable<Post> GetPostsByAuthor(long authorId)
+        {
+            return Context.Posts
+                .Where(p => p.AuthorId == authorId)
+                .ToList();
+                
         }
     }
 }

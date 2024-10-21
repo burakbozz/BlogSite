@@ -41,4 +41,27 @@ public class PostsController(IPostService _postService) : ControllerBase
         var result = _postService.Update(dto);
         return Ok(result);
     }
+
+    [HttpGet("GetPostsByAuthor/{authorId}")]
+    public IActionResult GetPostsByAuthor(long authorId)
+    {
+        var result = _postService.GetPostsByAuthor(authorId);
+        if (result.Success)
+        {
+            return Ok(result);
+        }
+        return StatusCode(result.StatusCode, result);
+    }
+
+    
+    [HttpGet("GetPostsByCategory/{categoryId}")]
+    public IActionResult GetPostsByCategory(int categoryId)
+    {
+        var result = _postService.GetPostsByCategory(categoryId);
+        if (result.Success)
+        {
+            return Ok(result);
+        }
+        return StatusCode(result.StatusCode, result);
+    }
 }

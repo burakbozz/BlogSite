@@ -76,6 +76,8 @@ public class PostService : IPostService
         };
     }
 
+
+
     public ReturnModel<PostResponseDto> Remove(Guid id)
     {
         Post post = _postRepository.GetById(id);
@@ -116,4 +118,33 @@ public class PostService : IPostService
             Success = true
         };
     }
+
+    public ReturnModel<IEnumerable<PostResponseDto>> GetPostsByAuthor(long authorId)
+    {
+        List<Post> posts = _postRepository.GetPostsByAuthor(authorId).ToList();
+        List<PostResponseDto> postResponses = _mapper.Map<List<PostResponseDto>>(posts);
+
+        return new ReturnModel<IEnumerable<PostResponseDto>>
+        {
+            Data = postResponses,
+            Message = "Yazarın postları listelendi.",
+            StatusCode = 200,
+            Success = true
+        };
+    }
+
+    public ReturnModel<IEnumerable<PostResponseDto>> GetPostsByCategory(int categoryId)
+    {
+        List<Post> posts = _postRepository.GetPostsByCategory(categoryId).ToList();
+        List<PostResponseDto> postResponses = _mapper.Map<List<PostResponseDto>>(posts);
+
+        return new ReturnModel<IEnumerable<PostResponseDto>>
+        {
+            Data = postResponses,
+            Message = "Kategoriye ait postlar listelendi.",
+            StatusCode = 200,
+            Success = true
+        };
+    }
+
 }

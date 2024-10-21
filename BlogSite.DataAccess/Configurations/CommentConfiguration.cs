@@ -31,5 +31,9 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
             .WithMany(x => x.Comments)
             .HasForeignKey(x => x.PostId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Navigation(x => x.User).AutoInclude();
+        builder.Navigation(x => x.Post).AutoInclude();
+
     }
 }

@@ -18,4 +18,8 @@ public interface ICommentService
     ReturnModel<CommentResponseDto> Update(UpdateCommentRequest updateComment);
 
     ReturnModel<CommentResponseDto> Remove(Guid id);
+
+    ReturnModel<List<CommentResponseDto>> GetCommentsByPost(Guid postId);
+
+    ReturnModel<List<CommentResponseDto>> GetCommentsByAuthor(long authorId);
 }
