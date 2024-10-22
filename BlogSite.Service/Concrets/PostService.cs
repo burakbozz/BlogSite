@@ -119,29 +119,28 @@ public class PostService : IPostService
         };
     }
 
-    public ReturnModel<IEnumerable<PostResponseDto>> GetPostsByAuthor(long authorId)
+    public ReturnModel<List<PostResponseDto>> GetAllByAuthorId(long id)
     {
-        List<Post> posts = _postRepository.GetPostsByAuthor(authorId).ToList();
-        List<PostResponseDto> postResponses = _mapper.Map<List<PostResponseDto>>(posts);
+        var posts = _postRepository.GetAll(x => x.AuthorId == id, false);
+        var responses = _mapper.Map<List<PostResponseDto>>(posts);
 
-        return new ReturnModel<IEnumerable<PostResponseDto>>
+        return new ReturnModel<List<PostResponseDto>>
         {
-            Data = postResponses,
-            Message = "Yazarın postları listelendi.",
+            Data = responses,
             StatusCode = 200,
             Success = true
         };
+
     }
 
-    public ReturnModel<IEnumerable<PostResponseDto>> GetPostsByCategory(int categoryId)
+    public ReturnModel<List<PostResponseDto>> GetAllByCategoryId(int id)
     {
-        List<Post> posts = _postRepository.GetPostsByCategory(categoryId).ToList();
-        List<PostResponseDto> postResponses = _mapper.Map<List<PostResponseDto>>(posts);
+        var posts = _postRepository.GetAll(x => x.CategoryId == id, false);
+        var responses = _mapper.Map<List<PostResponseDto>>(posts);
 
-        return new ReturnModel<IEnumerable<PostResponseDto>>
+        return new ReturnModel<List<PostResponseDto>>
         {
-            Data = postResponses,
-            Message = "Kategoriye ait postlar listelendi.",
+            Data = responses,
             StatusCode = 200,
             Success = true
         };

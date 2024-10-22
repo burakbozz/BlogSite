@@ -42,20 +42,16 @@ public class PostsController(IPostService _postService) : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("GetPostsByAuthor/{authorId}")]
-    public IActionResult GetPostsByAuthor(long authorId)
+    [HttpGet("author")]
+    public IActionResult GetAllByAuthorId([FromQuery] long authorId)
     {
-        var result = _postService.GetPostsByAuthor(authorId);
+        var result = _postService.GetAllByAuthorId(authorId);
         return Ok(result);
-       
     }
-
-    
-    [HttpGet("GetPostsByCategory/{categoryId}")]
-    public IActionResult GetPostsByCategory(int categoryId)
+    [HttpGet("category")]
+    public IActionResult GetAllByCategoryId([FromQuery] int categoryId)
     {
-        var result = _postService.GetPostsByCategory(categoryId);
+        var result = _postService.GetAllByCategoryId(categoryId);
         return Ok(result);
-               
     }
 }

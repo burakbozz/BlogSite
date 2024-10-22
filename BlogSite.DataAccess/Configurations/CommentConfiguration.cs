@@ -35,5 +35,8 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
         builder.Navigation(x => x.User).AutoInclude();
         builder.Navigation(x => x.Post).AutoInclude();
 
+
+
+
     }
 }

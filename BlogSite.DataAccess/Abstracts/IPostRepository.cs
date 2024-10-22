@@ -10,3 +10,6 @@ public interface IPostRepository : IRepository<Post,Guid>
     IEnumerable<Post> GetPostsByAuthor(long authorId);
     IEnumerable<Post> GetPostsByCategory(int categoryId);
 }
+
+
+
