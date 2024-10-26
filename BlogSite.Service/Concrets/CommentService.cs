@@ -121,7 +121,7 @@ public class CommentService : ICommentService
             Success = true
         };
     }
-    public ReturnModel<List<CommentResponseDto>> GetCommentsByAuthor(long authorId)
+    public ReturnModel<List<CommentResponseDto>> GetCommentsByAuthor(string authorId)
     {
         var comments = _commentRepository.GetCommentsByAuthor(authorId).ToList();
         var commentDtos = _mapper.Map<List<CommentResponseDto>>(comments);

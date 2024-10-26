@@ -7,111 +7,124 @@ using BlogSite.Models.Dtos.User.Requests;
 using BlogSite.Models.Dtos.User.Responses;
 using BlogSite.Models.Entities;
 using BlogSite.Service.Abstracts;
+using Core.Exceptions;
 using Core.Responses;
+using Microsoft.AspNetCore.Identity;
 
 namespace BlogSite.Service.Concrets;
 
-public class UserService : IUserService
+public sealed class UserService(UserManager<User> _userManager) : IUserService
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IMapper _mapper;
-
-    public UserService(IUserRepository userRepository,IMapper mapper)
+    public async Task<User> ChangePasswordAsync(string id, ChangePasswordRequestDto requestDto)
     {
-        _userRepository = userRepository;
-        _mapper = mapper;
-    }
-    public ReturnModel<UserResponseDto> Add(CreateUserRequest create)
-    {
-        User createdUser = _mapper.Map<User>(create);
-        
-
-        _userRepository.Add(createdUser);
-
-        UserResponseDto response = _mapper.Map<UserResponseDto>(createdUser);
-
-        return new ReturnModel<UserResponseDto>
-        {
-            Data = response,
-            Message = "User Eklendi.",
-            StatusCode = 200,
-            Success = true
-        };
-    }
-
-    public ReturnModel<List<UserResponseDto>> GetAll()
-    {
-        List<User> users = _userRepository.GetAll();
-        List<UserResponseDto> userResponses = _mapper.Map<List<UserResponseDto>>(users);
-
-        return new ReturnModel<List<UserResponseDto>>
-        {
-            Data = userResponses,
-            Message = "User listelendi.",
-            StatusCode = 200,
-            Success = true
-        };
-    }
-
-    public ReturnModel<UserResponseDto?> GetById(long id)
-    {
-        User? user = _userRepository.GetById(id);
-        UserResponseDto responseDto = _mapper.Map<UserResponseDto>(user);
+        var user = await _userManager.FindByIdAsync(id);
         if (user is null)
         {
-            return new ReturnModel<UserResponseDto?>
-            {
-                Data = null,
-                Message = "",
-                StatusCode = 404,
-                Success = false
-            };
-
+            throw new NotFoundException("Kullanıcı bulunamadı.");
         }
-        return new ReturnModel<UserResponseDto?>
+        if (requestDto.NewPassword.Equals(requestDto.NewPasswordAgain) is false)
         {
-            Data = responseDto,
-            Message = string.Empty,
-            StatusCode = 200,
-            Success = true
-        };
+            throw new BusinessException("Parola Uyuşmuyor.");
+        }
+
+        var result = await _userManager.ChangePasswordAsync(user, requestDto.CurrentPassword, requestDto.NewPassword);
+
+        if (result.Succeeded is false)
+        {
+            throw new BusinessException(result.Errors.ToList().First().Description);
+        }
+
+        return user;
     }
 
-    public ReturnModel<UserResponseDto> Remove(long id)
+    public async Task<string> DeleteAsync(string id)
     {
-        User user = _userRepository.GetById(id);
-        User deletedUser = _userRepository.Remove(user);
-
-        UserResponseDto response = _mapper.Map<UserResponseDto>(deletedUser);
-
-        return new ReturnModel<UserResponseDto>
+        var user = await _userManager.FindByIdAsync(id);
+        if (user is null)
         {
-            Data = response,
-            Message = "User Silindi.",
-            StatusCode = 200,
-            Success = true
-        };
+            throw new NotFoundException("Kullanıcı bulunamadı.");
+        }
+
+        var result = await _userManager.DeleteAsync(user);
+
+        if (result.Succeeded is false)
+        {
+            throw new BusinessException(result.Errors.ToList().First().Description);
+        }
+
+        return "Kullanıcı Silindi.";
+
     }
 
-    public ReturnModel<UserResponseDto> Update(UpdateUserRequest updateUser)
+    public async Task<User> GetByEmailAsync(string email)
     {
-        User? user = _userRepository.GetById(updateUser.Id);
-        user.FirstName = updateUser.FirstName;
-        user.LastName = updateUser.LastName;
-        user.Email = updateUser.Email;
-        user.UpdatedDate = DateTime.Now;
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if(user is null)
+        {
+             Console.WriteLine("kullanıcı bulunamadı.");
+        }
+        return user;
+    }
+
+    public async Task<User> LoginAsync(LoginRequestDto dto)
+    {
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+
+        if (user is null)
+        {
+            throw new NotFoundException($"kullanıcı bulunamadı.");
+        }
+
+        bool checkPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
+        if (checkPassword is false)
+        {
+            throw new BusinessException("paralonız yanlış.");
+        }
+
+        return user;
+    }
+
+    public async Task<User> RegisterAsync(RegisterRequestDto dto)
+    {
+        User user = new User()
+        {
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            Email = dto.Email,
+            City = dto.City,
+            UserName = dto.UserName,
+
+        };
+        var result = await _userManager.CreateAsync(user, dto.Password);
+
+        if(!result.Succeeded)
+        {
+            throw new BusinessException(result.Errors.ToList().First().Description);
+        }
+
+        return user;
+    }
+
+    public async Task<User> UpdateAsync(string id, UserUpdateRequestDto dto)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user is null)
+        {
+            throw new NotFoundException("kullanıcı bulunumadı.");            
+        }
+        user.UserName= dto.UserName;
+        user.FirstName = dto.FirstName;
+        user.LastName = dto.LastName;
+        user.City = dto.City;
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if(!result.Succeeded)
+        {
+            throw new BusinessException(result.Errors.ToList().First().Description);
+        }
+        return user;
         
-
-        User updatedUser = _userRepository.Update(user);
-
-
-        UserResponseDto dto = _mapper.Map<UserResponseDto>(updatedUser);
-        return new ReturnModel<UserResponseDto>
-        {
-            Data = dto,
-            Message = "User güncellendi",
-            StatusCode = 200,
-            Success = true
-        };
     }
 }

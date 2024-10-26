@@ -9,7 +9,7 @@ using Core.Responses;
 namespace BlogSite.Service.Concrets;
 
 
-public class PostService : IPostService
+public sealed class PostService : IPostService
 {
     private readonly IPostRepository _postRepository;
     private readonly IMapper _mapper;
@@ -119,7 +119,7 @@ public class PostService : IPostService
         };
     }
 
-    public ReturnModel<List<PostResponseDto>> GetAllByAuthorId(long id)
+    public ReturnModel<List<PostResponseDto>> GetAllByAuthorId(string id)
     {
         var posts = _postRepository.GetAll(x => x.AuthorId == id, false);
         var responses = _mapper.Map<List<PostResponseDto>>(posts);

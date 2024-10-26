@@ -15,7 +15,7 @@ public class EfCommentRepository : EfRepositoryBase<BaseDbContext,Comment,Guid>,
         
     }
 
-    public IEnumerable<Comment> GetCommentsByAuthor(long authorId)
+    public IEnumerable<Comment> GetCommentsByAuthor(string authorId)
     {
         return Context.Comments
             .Where(c => c.UserId == authorId)

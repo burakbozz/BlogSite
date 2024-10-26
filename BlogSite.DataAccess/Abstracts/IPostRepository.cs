@@ -7,7 +7,7 @@ namespace BlogSite.DataAccess.Abstracts;
 
 public interface IPostRepository : IRepository<Post,Guid>
 {
-    IEnumerable<Post> GetPostsByAuthor(long authorId);
+    IEnumerable<Post> GetPostsByAuthor(string authorId);
     IEnumerable<Post> GetPostsByCategory(int categoryId);
 }
 

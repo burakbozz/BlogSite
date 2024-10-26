@@ -21,5 +21,5 @@ public interface ICommentService
 
     ReturnModel<List<CommentResponseDto>> GetCommentsByPost(Guid postId);
 
-    ReturnModel<List<CommentResponseDto>> GetCommentsByAuthor(long authorId);
+    ReturnModel<List<CommentResponseDto>> GetCommentsByAuthor(string authorId);
 }

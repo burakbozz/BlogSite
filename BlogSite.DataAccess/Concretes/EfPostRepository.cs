@@ -26,7 +26,7 @@ namespace BlogSite.DataAccess.Concretes
                 
         }
 
-        public IEnumerable<Post> GetPostsByAuthor(long authorId)
+        public IEnumerable<Post> GetPostsByAuthor(string authorId)
         {
             return Context.Posts
                 .Where(p => p.AuthorId == authorId)
