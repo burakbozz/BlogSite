@@ -28,14 +28,11 @@ public sealed class UserService(UserManager<User> _userManager) : IUserService
         }
 
         var result = await _userManager.ChangePasswordAsync(user, requestDto.CurrentPassword, requestDto.NewPassword);
-
-        if (result.Succeeded is false)
-        {
-            throw new BusinessException(result.Errors.ToList().First().Description);
-        }
+        CheckForIdentityResult(result);
 
         return user;
     }
+
 
     public async Task<string> DeleteAsync(string id)
     {
@@ -46,11 +43,7 @@ public sealed class UserService(UserManager<User> _userManager) : IUserService
         }
 
         var result = await _userManager.DeleteAsync(user);
-
-        if (result.Succeeded is false)
-        {
-            throw new BusinessException(result.Errors.ToList().First().Description);
-        }
+        CheckForIdentityResult(result);
 
         return "Kullanıcı Silindi.";
 
@@ -60,10 +53,11 @@ public sealed class UserService(UserManager<User> _userManager) : IUserService
     {
         var user = await _userManager.FindByEmailAsync(email);
 
-        if(user is null)
+        if (user is null)
         {
-             Console.WriteLine("kullanıcı bulunamadı.");
+            throw new NotFoundException("Kullanıcı bulunamadı.");
         }
+
         return user;
     }
 
@@ -73,13 +67,14 @@ public sealed class UserService(UserManager<User> _userManager) : IUserService
 
         if (user is null)
         {
-            throw new NotFoundException($"kullanıcı bulunamadı.");
+            throw new NotFoundException("Kullanıcı bulunamadı.");
         }
 
         bool checkPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
+
         if (checkPassword is false)
         {
-            throw new BusinessException("paralonız yanlış.");
+            throw new BusinessException("Parolanız yanlış.");
         }
 
         return user;
@@ -87,7 +82,7 @@ public sealed class UserService(UserManager<User> _userManager) : IUserService
 
     public async Task<User> RegisterAsync(RegisterRequestDto dto)
     {
-        User user = new User()
+        User user = new User
         {
             FirstName = dto.FirstName,
             LastName = dto.LastName,
@@ -97,11 +92,10 @@ public sealed class UserService(UserManager<User> _userManager) : IUserService
 
         };
         var result = await _userManager.CreateAsync(user, dto.Password);
+        CheckForIdentityResult(result);
 
-        if(!result.Succeeded)
-        {
-            throw new BusinessException(result.Errors.ToList().First().Description);
-        }
+        var addRole = await _userManager.AddToRoleAsync(user, "User");
+        CheckForIdentityResult(addRole);
 
         return user;
     }
@@ -111,20 +105,27 @@ public sealed class UserService(UserManager<User> _userManager) : IUserService
         var user = await _userManager.FindByIdAsync(id);
         if (user is null)
         {
-            throw new NotFoundException("kullanıcı bulunumadı.");            
+            throw new NotFoundException("Kullanıcı bulunamadı.");
         }
-        user.UserName= dto.UserName;
+
+        user.UserName = dto.UserName;
         user.FirstName = dto.FirstName;
         user.LastName = dto.LastName;
         user.City = dto.City;
 
-        var result = await _userManager.UpdateAsync(user);
 
-        if(!result.Succeeded)
+        var result = await _userManager.UpdateAsync(user);
+        CheckForIdentityResult(result);
+
+        return user;
+    }
+
+
+    private void CheckForIdentityResult(IdentityResult result)
+    {
+        if (!result.Succeeded)
         {
             throw new BusinessException(result.Errors.ToList().First().Description);
         }
-        return user;
-        
     }
 }
